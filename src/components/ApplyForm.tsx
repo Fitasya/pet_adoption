@@ -102,7 +102,8 @@ export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
                       <div
                         key={pet.id}
                         onClick={() => setSelectedPetId(pet.id)}
-                        className={`cursor-pointer rounded-lg border p-3 flex gap-3 items-center transition-all ${
+                        className={`cursor-pointer rounded-lg border p-3 
+                          flex gap-3 items-center transition-all ${
                           isSelected
                             ? "border-orange-600 bg-orange-50/50 dark:bg-orange-950/30 ring-2 ring-orange-600"
                             : "hover:border-slate-300"
@@ -145,6 +146,8 @@ export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
                 onChange={(e) => setReason(e.target.value)}
                 required
                 placeholder="Describe your home setup..."
+                className="focus:border-orange-600 focus:bg-orange-50/50 
+                 focus:ring-2 focus:ring-orange-600"
               />
             </div>
           </div>

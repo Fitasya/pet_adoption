@@ -201,13 +201,15 @@ app.put('/api/requests/:id', (req, res) => {
   const { id } = req.params;
   const { applicantName, email, petId, petName, reason, status } = req.body;
 
+  const numericId = parseInt(id.replace(/\D/g, ''), 10);
+
   const sql = `
     UPDATE requests 
     SET applicantName = ?, email = ?, petId = ?, petName = ?, reason = ?, status = ? 
     WHERE id = ?
   `;
 
-  db.query(sql, [applicantName, email, petId, petName, reason, status, id], (err, result) => {
+  db.query(sql, [applicantName, email, petId, petName, reason, status, numericId], (err, result) => {
     if (err) {
       console.error('Error updating request:', err);
       return res.status(500).json(err);
