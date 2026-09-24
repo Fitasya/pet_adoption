@@ -17,7 +17,7 @@ import { toast, Toaster } from "sonner";
 
 export default function App() {
   const [pets, setPets] = useState<Pet[]>([]);
-  
+
   // 1. Initialize editingId from localStorage
   const [editingId, setEditingId] = useState<string | null>(() => {
     return localStorage.getItem("editingId");
@@ -259,16 +259,15 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-      <Toaster 
-      position="bottom-right" 
-      
-      toastOptions={{
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
           classNames: {
-            toast: 'bg-white text-gray-900 border border-gray-200',
-            success: 'bg-orange-50 text-orange-900 border-orange-200',
-            icon: 'text-orange-500',
+            toast: "bg-white text-gray-900 border border-gray-200",
+            success: "bg-orange-50 text-orange-900 border-orange-200",
+            icon: "text-orange-500",
           },
-        }} 
+        }}
       />
       <Navbar
         role={user.role}
