@@ -44,7 +44,8 @@ db.connect((err) => {
 });
 
 app.get('/api/pets', (req, res) => {
-  db.query('SELECT * FROM pets ORDER BY id DESC', (err, results) => {
+  db.query('SELECT * FROM pets WHERE status = "available" ORDER BY id DESC', 
+    (err, results) => {
     if (err) return res.status(500).json(err);
     res.json(results);
   });
@@ -198,7 +199,7 @@ app.get('/api/requests', (req, res) => {
 });
 
 app.put('/api/requests/:id', (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // request id
   const { applicantName, email, petId, petName, reason, status } = req.body;
 
   const numericId = parseInt(id.replace(/\D/g, ''), 10);
@@ -214,7 +215,6 @@ app.put('/api/requests/:id', (req, res) => {
       console.error('Error updating request:', err);
       return res.status(500).json(err);
     }
-
     res.json({ message: 'Request updated successfully' });
   });
 });
@@ -229,7 +229,6 @@ app.delete('/api/requests/:id', (req, res) => {
       console.error('Error cancelling request:', err);
       return res.status(500).json(err);
     }
-
     res.json({ message: 'Request cancelled successfully' });
   });
 });
@@ -238,15 +237,77 @@ app.patch('/api/requests/:id/status', (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  const sql = 'UPDATE requests SET status = ? WHERE id = ?';
+  // If status is not 'approved', update only the specified request
+  if (status !== 'approved') {
+    const sql = 'UPDATE requests SET status = ? WHERE id = ?';
+    return db.query(sql, [status, id], (err, result) => {
+      if (err) {
+        console.error('Error updating status:', err);
+        return res.status(500).json(err);
+      }
+      res.json({ message: 'Status updated successfully' });
+    });
+  }
 
-  db.query(sql, [status, id], (err, result) => {
+  // 1. Get the petId for the approved request
+  const getPetSql = 'SELECT petId FROM requests WHERE id = ?';
+
+  db.query(getPetSql, [id], (err, results) => {
+    if (err || results.length === 0) {
+      console.error('Error finding request:', err);
+      return res.status(500).json(err || { error: 'Request not found' });
+    }
+
+    const petId = results[0].petId;
+
+    // 2. Mark the selected request as approved
+    const approveSql = 'UPDATE requests SET status = "approved" WHERE id = ?';
+
+    db.query(approveSql, [id], (err) => {
+      if (err) {
+        console.error('Error approving request:', err);
+        return res.status(500).json(err);
+      }
+
+// 3. Find, then reject, all other requests for the same petId
+const findOthersSql = 'SELECT id FROM requests WHERE petId = ? AND id != ?';
+
+db.query(findOthersSql, [petId, id], (err, others) => {
+  if (err) {
+    console.error('Error finding other requests:', err);
+    return res.status(500).json(err);
+  }
+
+  const rejectedIds = others.map((row) => row.id);
+
+  const rejectOthersSql =
+    'UPDATE requests SET status = "rejected" WHERE petId = ? AND id != ?';
+
+  db.query(rejectOthersSql, [petId, id], (err) => {
     if (err) {
-      console.error('Error updating status:', err);
+      console.error('Error rejecting other requests:', err);
       return res.status(500).json(err);
     }
 
-    res.json({ message: 'Status updated successfully' });
+    // 4. Update pet status to unavailable
+    const updatePetSql = 'UPDATE pets SET status = "unavailable" WHERE id = ?';
+
+    db.query(updatePetSql, [petId], (err) => {
+      if (err) {
+        console.error('Error updating pet status:', err);
+        return res.status(500).json(err);
+      }
+
+      res.json({
+        message:
+          'Request approved, other requests rejected, and pet status updated to unavailable',
+        petId,
+        rejectedIds,
+      });
+    });
+  });
+});
+    }); 
   });
 });
 

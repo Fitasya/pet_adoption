@@ -38,3 +38,4 @@ export interface SignupPayload extends LoginCredentials {
 export type UserRole = 'applicant' | 'reviewer';
 export type ActiveTab = 'apply' | 'review' | 'edit' | 'pets';
 
+export type NewAdoptionRequest = Omit<AdoptionRequest, "id" | "status" | "submittedAt">;
