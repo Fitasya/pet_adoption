@@ -120,13 +120,14 @@ export function ReviewDashboard({
       </div>
 
       <div
-        className="border rounded-lg overflow-auto 
+        className="border border-slate-400 rounded-lg overflow-auto 
       bg-background max-h-[calc(100vh-160px)]"
       >
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="sticky top-0 z-[-1px] bg-orange-300 text-slate-900 font-semibold">
+              <TableHead className="sticky top-0 z-[-1px] bg-orange-300 
+              text-slate-900 font-semibold ">
                 Applicant
               </TableHead>
               <TableHead className="sticky top-0 z-[-1px] bg-orange-300 text-slate-900 font-semibold">

@@ -35,7 +35,28 @@ export interface SignupPayload extends LoginCredentials {
   name: string;
 }
 
+// start messaging
+export interface ChatMessage {
+  id: string;
+  conversationId: string; // the applicant's user id
+  fromId: string;
+  senderName: string;
+  text: string;
+  sentAt: string;
+  readAt: string | null;
+}
+
+export type ClientEvent =
+  | { type: 'send'; conversationId: string; text: string }
+  | { type: 'read'; conversationId: string };
+
+export type ServerEvent =
+  | { type: 'message'; message: ChatMessage }
+  | { type: 'read'; conversationId: string; readBy: UserRole; readAt: string }
+  | { type: 'unread'; counts: Record<string, number> };
+ // end messaging
+
 export type UserRole = 'applicant' | 'reviewer';
-export type ActiveTab = 'apply' | 'review' | 'edit' | 'pets';
+export type ActiveTab = 'home' | 'apply' | 'review' | 'edit' | 'pets' | 'profile' | 'chat' | 'aboutUs';
 
 export type NewAdoptionRequest = Omit<AdoptionRequest, "id" | "status" | "submittedAt">;

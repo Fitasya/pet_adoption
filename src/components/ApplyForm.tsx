@@ -15,14 +15,22 @@ import { useAuth } from "../context/AuthContext";
 
 interface ApplyFormProps {
   pets: Pet[];
+  initialPetId?: string | null;
   onAddRequest: (
     request: Omit<AdoptionRequest, "id" | "status" | "submittedAt">,
   ) => void;
 }
 
-export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
+export function ApplyForm({
+  pets,
+  initialPetId,
+  onAddRequest,
+}: ApplyFormProps) {
   const { user } = useAuth(); // Grabs user state globally
-  const [selectedPetId, setSelectedPetId] = useState<string>(pets[0]?.id || "");
+  // const [selectedPetId, setSelectedPetId] = useState<string>(pets[0]?.id || "");
+  const [selectedPetId, setSelectedPetId] = useState<string>(
+    pets.find((p) => p.id === initialPetId)?.id ?? pets[0]?.id ?? "",
+  );
   const [applicantName, setApplicantName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [reason, setReason] = useState("");
@@ -56,13 +64,12 @@ export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
   }, [user]);
 
   return (
-    <Card className="max-w-2xl mx-auto border shadow-sm">
+    <Card className="max-w-2xl mx-auto border border-slate-400 shadow-sm">
       <CardHeader>
         <CardTitle>Pet Adoption Application</CardTitle>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
-          
           <div className="space-y-8">
             <div className="space-y-1">
               <label className="text-sm font-medium">Your Full Name</label>
@@ -72,6 +79,7 @@ export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
                 required
                 placeholder="Jane Doe"
                 disabled
+                className="disabled:border-slate-400"
               />
             </div>
             <div className="space-y-1">
@@ -83,6 +91,7 @@ export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
                 required
                 placeholder="jane@example.com"
                 disabled
+                className="disabled:border-slate-400"
               />
             </div>
 
@@ -102,12 +111,13 @@ export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
                       <div
                         key={pet.id}
                         onClick={() => setSelectedPetId(pet.id)}
-                        className={`cursor-pointer rounded-lg border p-3 
+                        className={`cursor-pointer rounded-lg border 
+                          border-slate-400 p-3 
                           flex gap-3 items-center transition-all ${
-                          isSelected
-                            ? "border-orange-600 bg-orange-50/50 dark:bg-orange-950/30 ring-2 ring-orange-600"
-                            : "hover:border-slate-300"
-                        }`}
+                            isSelected
+                              ? " border-white bg-orange-50/50 dark:bg-orange-950/30 ring-2 ring-orange-600"
+                              : "hover:border-slate-500"
+                          }`}
                       >
                         <img
                           src={pet.imageUrl}
@@ -147,7 +157,7 @@ export function ApplyForm({ pets, onAddRequest }: ApplyFormProps) {
                 required
                 placeholder="Describe your home setup..."
                 className="focus:border-orange-600 focus:bg-orange-50/50 
-                 focus:ring-2 focus:ring-orange-600"
+                 focus:ring-2 focus:ring-orange-600 bg-white border-slate-400"
               />
             </div>
           </div>

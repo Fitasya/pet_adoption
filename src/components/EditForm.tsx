@@ -140,6 +140,8 @@ export function EditForm({ request, pets, onSave, onCancel }: EditFormProps) {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               required
+               className="focus:border-orange-600 focus:bg-orange-50/50 
+                 focus:ring-2 focus:ring-orange-600 bg-white border-slate-400"
             />
           </div>
         </CardContent>

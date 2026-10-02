@@ -56,7 +56,7 @@ export function ManagePets({ pets, onAddPet, onDeletePet }: ManagePetsProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="border shadow-sm">
+      <Card className="border shadow-sm border-slate-400">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <PlusCircle className="h-5 w-5 text-emerald-600" />
@@ -72,6 +72,10 @@ export function ManagePets({ pets, onAddPet, onDeletePet }: ManagePetsProps) {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="e.g. Buddy"
+                className="w-full px-4 py-3 pr-12 rounded-xl bg-white border 
+                    border-slate-400 text-slate-800 placeholder-slate-400 
+                    focus:outline-none focus:ring-2 focus:ring-orange-500 
+                    focus:bg-orange-50/50 transition-all focus:border-orange-500"
               />
             </div>
 
@@ -82,6 +86,10 @@ export function ManagePets({ pets, onAddPet, onDeletePet }: ManagePetsProps) {
                 onChange={(e) => setBreed(e.target.value)}
                 required
                 placeholder="e.g. Beagle"
+                className="w-full px-4 py-3 pr-12 rounded-xl bg-white border 
+                    border-slate-400 text-slate-800 placeholder-slate-400 
+                    focus:outline-none focus:ring-2 focus:ring-orange-500 
+                    focus:bg-orange-50/50 transition-all focus:border-orange-500"
               />
             </div>
 
@@ -92,7 +100,8 @@ export function ManagePets({ pets, onAddPet, onDeletePet }: ManagePetsProps) {
                 accept="image/*"
                 onChange={handleFileChange}
                 required
-                className="cursor-pointer"
+                className="cursor-pointer bg-white border-slate-400 rounded-xl"
+                
               />
               {imagePreview && (
                 <div className="mt-3 flex items-center gap-3">
@@ -114,6 +123,10 @@ export function ManagePets({ pets, onAddPet, onDeletePet }: ManagePetsProps) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Short bio..."
+                 className="w-full px-4 py-3 pr-12 rounded-xl bg-white border 
+                    border-slate-400 text-slate-800 placeholder-slate-400 
+                    focus:outline-none focus:ring-2 focus:ring-orange-500 
+                    focus:bg-orange-50/50 transition-all focus:border-orange-500"
               />
             </div>
           </CardContent>
@@ -137,41 +150,42 @@ export function ManagePets({ pets, onAddPet, onDeletePet }: ManagePetsProps) {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {pets.map((pet) => (
-              <Card
-                key={pet.id}
-                className="overflow-hidden flex flex-col justify-between"
-              >
-                <div>
-                  <img
-                    src={pet.imageUrl}
-                    alt={pet.name}
-                    className="h-48 w-full object-cover"
-                  />
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle>{pet.name}</CardTitle>
-                        <span className="text-xs text-slate-500">
-                          {pet.breed}
-                        </span>
-                      </div>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="text-rose-600"
-                        onClick={() => setDeletingPetId(pet.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+            <Card
+              key={pet.id}
+              className="overflow-hidden flex flex-col 
+              justify-between border border-slate-400"
+            >
+              <div>
+                <img
+                  src={pet.imageUrl}
+                  alt={pet.name}
+                  className="h-48 w-full object-cover"
+                />
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>{pet.name}</CardTitle>
+                      <span className="text-xs text-slate-500">
+                        {pet.breed}
+                      </span>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                      {pet.description}
-                    </p>
-                  </CardContent>
-                </div>
-              </Card>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-rose-600"
+                      onClick={() => setDeletingPetId(pet.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                    {pet.description}
+                  </p>
+                </CardContent>
+              </div>
+            </Card>
           ))}
         </div>
       </div>

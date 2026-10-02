@@ -1,63 +1,117 @@
-import type { UserRole, ActiveTab } from '../types';
-import { Button } from './ui/button';
-import { LogOut, Dog } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+// components/Navbar.tsx
+
+import type { UserRole, ActiveTab } from "../types";
+import { Button } from "./ui/button";
+import { LogOut, Dog, MessageCircle } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 interface NavbarProps {
   role: UserRole;
   setRole: (role: UserRole) => void;
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
+  unreadCount: number;
 }
 
-export function Navbar({ role, setRole, activeTab, setActiveTab }: NavbarProps) {
+export function Navbar({
+  role,
+  setRole,
+  activeTab,
+  setActiveTab,
+  unreadCount,
+}: NavbarProps) {
   const { user, setUser } = useAuth();
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('activeTab');
+    localStorage.removeItem("activeTab");
   };
 
-    const getTabClass = (tabName: ActiveTab) =>
-    `cursor-pointer transition-colors ${
+  const getTabClass = (tabName: ActiveTab) =>
+    `cursor-pointer ${
       activeTab === tabName
-        ? 'text-slate-600 text-orange-800 bg-orange-200'
-        : 'text-slate-600 hover:text-orange-700 hover:bg-orange-100'
+        ? "text-slate-600 text-orange-800 bg-orange-100"
+        : "text-slate-600 hover:text-orange-800 hover:bg-orange-50"
     }`;
 
   return (
-    <header className="border-b bg-white px-6 py-3 flex items-center 
-    justify-between sticky top-0 w-full z-500">
+    <header
+      className="border-b bg-white px-6 py-3 flex items-center 
+    justify-between sticky top-0 w-full z-500"
+    >
       {/* Left side: Brand + Tabs */}
       <div className="flex items-center gap-6">
         <h1 className="text-xl font-bold">🐾 Pet AdoptHub</h1>
         <nav className="flex gap-2">
           <Button
-            variant={activeTab === 'apply' ? 'default' : 'ghost'}
+            variant={activeTab === "home" ? "default" : "ghost"}
             size="sm"
-            onClick={() => setActiveTab('apply')}
-            className={getTabClass('apply')}
+            onClick={() => setActiveTab("home")}
+            className={getTabClass("home")}
+          >
+            Home
+          </Button>
+          <Button
+            variant={activeTab === "apply" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("apply")}
+            className={getTabClass("apply")}
           >
             Submit Request
           </Button>
           <Button
-            variant={activeTab === 'review' ? 'default' : 'ghost'}
+            variant={activeTab === "review" ? "default" : "ghost"}
             size="sm"
-            onClick={() => setActiveTab('review')}
-            className={getTabClass('review')}
+            onClick={() => setActiveTab("review")}
+            className={getTabClass("review")}
           >
             Review Dashboard
           </Button>
-          {role === 'reviewer' && (
+          {role === "reviewer" && (
             <Button
-              variant={activeTab === 'pets' ? 'default' : 'ghost'}
+              variant={activeTab === "pets" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setActiveTab('pets')}
-              className={`flex items-center gap-1 ${getTabClass('pets')}`}
+              onClick={() => setActiveTab("pets")}
+              className={`flex items-center gap-1 ${getTabClass("pets")}`}
             >
               <Dog className="h-4 w-4" />
               Manage Pets
             </Button>
           )}
+          <Button
+            variant={activeTab === "profile" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("profile")}
+            className={getTabClass("profile")}
+          >
+            Change Password
+          </Button>
+
+          <Button
+            variant={activeTab === "aboutUs" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("aboutUs")}
+            className={getTabClass("aboutUs")}
+          >
+            About Us
+          </Button>
+
+          <Button
+            variant={activeTab === "chat" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("chat")}
+            className={`flex items-center gap-1 ${getTabClass("chat")}`}
+          >
+            <MessageCircle className="h-4 w-4" />
+            Chat
+            {unreadCount > 0 && (
+              <span
+                className="ml-1 min-w-5 h-5 px-1 rounded-full bg-red-600 
+              text-white text-xs flex items-center justify-center"
+              >
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </Button>
         </nav>
       </div>
 

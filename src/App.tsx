@@ -1,5 +1,5 @@
 // App.tsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import type { AdoptionRequest, ActiveTab, NewAdoptionRequest } from "./types";
 import { Navbar } from "./components/Navbar";
@@ -18,13 +18,25 @@ import {
   getPetsForApply,
   getPetsForEdit,
 } from "./utils/availablePets";
+import { Profile } from "./components/Profile";
+import { Chat } from "./components/Chat";
+import { useUnread } from "./hooks/useUnread";
+import { AboutUs } from "./components/AboutUs";
+import { Home } from "./components/Home";
 
 export default function App() {
   const { user, setUser } = useAuth();
+  const { counts: unreadCounts, total: unreadTotal } = useUnread(user?.id);
   const auth = useAuthForm();
   const { pets, addPet, deletePet } = usePets();
   const { requests, addRequest, changeStatus, saveRequest, removeRequest } =
     useRequests();
+  const [preselectedPetId, setPreselectedPetId] = useState<string | null>(null);
+
+  const handleAdoptPet = (petId: string) => {
+    setPreselectedPetId(petId);
+    setActiveTab("apply");
+  };
 
   const [activeTab, setActiveTab] = usePersistedState<ActiveTab>(
     "activeTab",
@@ -68,9 +80,12 @@ export default function App() {
     setActiveTab("review");
   };
 
+  const toaster = <Toaster richColors position="bottom-right" />;
+
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-6">
+        {toaster}
         <AuthForm
           onLogin={auth.login}
           onSignup={auth.signup}
@@ -83,36 +98,35 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          classNames: {
-            toast: "bg-white text-gray-900 border border-gray-200",
-            success: "bg-orange-50 text-orange-900 border-orange-200",
-            icon: "text-orange-500",
-          },
-        }}
-      />
+      {toaster}
       <Navbar
         role={user.role}
         setRole={(newRole) => setUser({ ...user, role: newRole })}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={(tab) => {
+          setPreselectedPetId(null);
+          setActiveTab(tab);
+        }}
+        unreadCount={unreadTotal}
       />
 
       <main className="p-6">
+        {activeTab === "home" && (
+          <Home
+            pets={getPetsForApply(pets, pendingIds)}
+            setActiveTab={setActiveTab}
+            onAdopt={handleAdoptPet}
+          />
+        )}
         {activeTab === "apply" && (
           <ApplyForm
             pets={getPetsForApply(pets, pendingIds)}
+            initialPetId={preselectedPetId}
             onAddRequest={handleAddRequest}
           />
         )}
         {activeTab === "pets" && (
-          <ManagePets
-            pets={pets}
-            onAddPet={addPet}
-            onDeletePet={deletePet}
-          />
+          <ManagePets pets={pets} onAddPet={addPet} onDeletePet={deletePet} />
         )}
         {activeTab === "review" && (
           <ReviewDashboard
@@ -130,6 +144,11 @@ export default function App() {
             onCancel={handleCancelEdit}
           />
         )}
+        {activeTab === "profile" && <Profile setActiveTab={setActiveTab} />}
+        {activeTab === "chat" && (
+          <Chat currentUser={user} unreadCounts={unreadCounts} />
+        )}
+        {activeTab === "aboutUs" && <AboutUs />}
       </main>
     </div>
   );
